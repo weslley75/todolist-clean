@@ -10,7 +10,7 @@ export default function Home() {
   const addTodo = (message: string) => {
     const todo: Todo = {
       id: crypto.randomUUID(),
-      text: message,
+      description: message,
       completed: false,
       createdAt: new Date(),
     };
@@ -32,9 +32,10 @@ export default function Home() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const message = e.currentTarget.message.value;
-    addTodo(message);
-    e.currentTarget.message.value = "";
+    const description = e.currentTarget.description.value;
+    if (!description) return;
+    addTodo(description);
+    e.currentTarget.description.value = "";
   };
 
   return (
@@ -45,7 +46,7 @@ export default function Home() {
           <Input
             placeholder="What needs to be done?"
             className="w-full rounded-r-none flex-grow text-black outline-none"
-            name="message"
+            name="description"
           />
           <button className="bg-blue-500 text-white p-2 rounded rounded-l-none">
             Add
