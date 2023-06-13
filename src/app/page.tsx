@@ -1,31 +1,31 @@
 "use client";
 import { Input } from "../components/input";
 import { useState } from "react";
-import { Todo } from "../types/todo.types";
-import { TodoItem } from "../components/todo-item";
+import { TaskType } from "../types/task.types";
+import { TaskComponent } from "../components/task";
 
 export default function Home() {
-  const [todos, setTodos] = useState<Todo[]>([]);
+  const [tasks, setTasks] = useState<TaskType[]>([]);
 
-  const addTodo = (message: string) => {
-    const todo: Todo = {
+  const addTask = (message: string) => {
+    const task: TaskType = {
       id: crypto.randomUUID(),
       description: message,
       completed: false,
       createdAt: new Date(),
     };
 
-    setTodos([...todos, todo]);
+    setTasks([...tasks, task]);
   };
 
-  const removeTodo = (id: string) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+  const removeTask = (id: string) => {
+    setTasks(tasks.filter((task) => task.id !== id));
   };
 
-  const toggleTodo = (id: string) => {
-    setTodos((todos) =>
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+  const toggleTask = (id: string) => {
+    setTasks((tasks) =>
+      tasks.map((task) =>
+        task.id === id ? { ...task, completed: !task.completed } : task
       )
     );
   };
@@ -34,7 +34,7 @@ export default function Home() {
     e.preventDefault();
     const description = e.currentTarget.description.value;
     if (!description) return;
-    addTodo(description);
+    addTask(description);
     e.currentTarget.description.value = "";
   };
 
@@ -54,12 +54,12 @@ export default function Home() {
         </form>
 
         <ul className="flex flex-col w-full mt-2 gap-2">
-          {todos.map((todo) => (
-            <TodoItem
-              key={todo.id}
-              todoItem={todo}
-              onRemove={removeTodo}
-              onToggle={toggleTodo}
+          {tasks.map((task) => (
+            <TaskComponent
+              key={task.id}
+              task={task}
+              onRemove={removeTask}
+              onToggle={toggleTask}
             />
           ))}
         </ul>

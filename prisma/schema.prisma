@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model TodoItem {
+model TaskItem {
   id          String   @id @default(uuid())
   description String
   isCompleted Boolean  @default(false)

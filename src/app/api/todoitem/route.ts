@@ -1,29 +1,29 @@
-import { TodoItem } from "@prisma/client";
+import { TaskItem } from "@prisma/client";
 import prisma from "../../../service/prisma";
 
+const taskItemRepo = prisma.taskItem;
+
 export async function GET(): Promise<Response> {
-  const todos = await prisma.todoItem.findMany();
-  return new Response(JSON.stringify(todos), {
+  const tasks = await taskItemRepo.findMany();
+  return new Response(JSON.stringify(tasks), {
     headers: { "content-type": "application/json" },
   });
 }
 
+type PostBody = Omit<TaskItem, "isCompleted" | "createdAt" | "updatedAt">;
+
 export async function POST(request: Request): Promise<Response> {
-  const todoItem = (await request.json()) as Omit<
-    TodoItem,
-    "isCompleted" | "createdAt" | "updatedAt"
-  >;
-  await prisma.todoItem.create({ data: { ...todoItem } });
+  const taskPayload = (await request.json()) as PostBody;
+  await taskItemRepo.create({ data: { ...taskPayload } });
 
   return new Response(null, { status: 201 });
 }
 
+type PutBody = Omit<TaskItem, "createdAt" | "updatedAt">;
+
 export async function PUT(request: Request): Promise<Response> {
-  const { id, ...rest } = (await request.json()) as Omit<
-    TodoItem,
-    "createdAt" | "updatedAt"
-  >;
-  await prisma.todoItem.update({ where: { id }, data: { ...rest } });
+  const { id, ...rest } = (await request.json()) as PutBody;
+  await taskItemRepo.update({ where: { id }, data: { ...rest } });
 
   return new Response(null, { status: 204 });
 }
@@ -37,7 +37,7 @@ export async function DELETE(request: Request): Promise<Response> {
     });
   }
 
-  await prisma.todoItem.delete({ where: { id } });
+  await taskItemRepo.delete({ where: { id } });
 
   return new Response(null, { status: 204 });
 }

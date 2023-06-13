@@ -1,17 +1,17 @@
-import { Todo } from "../types/todo.types";
+import { TaskType } from "../types/task.types";
 
-type TodoItemProps = {
-  todoItem: Todo;
+type TaskComponentProps = {
+  task: TaskType;
   onRemove: (id: string) => void;
   onToggle: (id: string) => void;
 };
 
-export const TodoItem: React.FC<TodoItemProps> = ({
-  todoItem,
+export const TaskComponent: React.FC<TaskComponentProps> = ({
+  task,
   onRemove,
   onToggle,
 }) => {
-  const { id, description, completed } = todoItem;
+  const { id, description, completed } = task;
 
   return (
     <li className="flex items-center gap-3 justify-between border border-zinc-600 p-2 rounded dark:bg-zinc-800">
