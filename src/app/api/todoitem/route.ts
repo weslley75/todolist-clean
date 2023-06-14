@@ -3,7 +3,16 @@ import prisma from "../../../service/prisma";
 
 const taskItemRepo = prisma.taskItem;
 
-export async function GET(): Promise<Response> {
+export async function GET(request: Request): Promise<Response> {
+  const url = new URL(request.url);
+  const id = url.searchParams.get("id");
+  if (id) {
+    const task = await taskItemRepo.findUnique({ where: { id } });
+    return new Response(JSON.stringify(task), {
+      headers: { "content-type": "application/json" },
+    });
+  }
+
   const tasks = await taskItemRepo.findMany();
   return new Response(JSON.stringify(tasks), {
     headers: { "content-type": "application/json" },
