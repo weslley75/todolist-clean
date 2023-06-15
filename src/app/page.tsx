@@ -1,33 +1,47 @@
 "use client";
 import { Input } from "../components/input";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TaskType } from "../types/task.types";
 import { TaskComponent } from "../components/task";
+import { TaskRepository } from "../domain/task/repository/task.repository";
+import { CreateTaskUseCase } from "../domain/task/usecase/create-task.usecase";
+import { DeleteTaskUseCase } from "../domain/task/usecase/delete-task.usecase";
+import { ListTasksUseCase } from "../domain/task/usecase/list-tasks.usecase";
+import { ToggleTaskCompletedUseCase } from "../domain/task/usecase/toggle-task-completed.usecase";
+import { TaskApiRepository } from "../infra/api/repositories/task.repository";
 
 export default function Home() {
+  const repository: TaskRepository = useMemo(
+    () => new TaskApiRepository(),
+    []
+  );
+
+  const createTaskUseCase = new CreateTaskUseCase(repository);
+  const listTasksUseCase = new ListTasksUseCase(repository);
+  const deleteTaskUseCase = new DeleteTaskUseCase(repository);
+  const toggleTaskUseCase = new ToggleTaskCompletedUseCase(repository);
+
   const [tasks, setTasks] = useState<TaskType[]>([]);
 
-  const addTask = (message: string) => {
-    const task: TaskType = {
-      id: crypto.randomUUID(),
-      description: message,
-      completed: false,
-      createdAt: new Date(),
-    };
+  const getTasks = () => {
+    listTasksUseCase
+      .execute()
+      .then((tasks) => setTasks(tasks))
+      .catch(console.error);
+  };
 
-    setTasks([...tasks, task]);
+  useEffect(getTasks, []);
+
+  const addTask = (message: string) => {
+    createTaskUseCase.execute(message).then(getTasks).catch(console.error);
   };
 
   const removeTask = (id: string) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+    deleteTaskUseCase.execute(id).then(getTasks).catch(console.error);
   };
 
   const toggleTask = (id: string) => {
-    setTasks((tasks) =>
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+    toggleTaskUseCase.execute(id).then(getTasks).catch(console.error);
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
